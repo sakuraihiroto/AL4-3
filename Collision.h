@@ -17,5 +17,8 @@ public:
 	static bool CheakRay2Plane(const Ray& ray, const Plane& plane,
 		float* distance = nullptr, DirectX::XMVECTOR* inter = nullptr);
 
+	static bool CheackRay2Triangle(const Ray& ray, const Triangle& triangle,
+		float* distance = nullptr, DirectX::XMVECTOR* inter = nullptr);
+
 };
 

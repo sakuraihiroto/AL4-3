@@ -93,24 +93,6 @@ void Collision::ClosestPtPoint2Triangle(const DirectX::XMVECTOR& point,
 	*closest = triangle.p0 + p0_p1 * v + p0_p2 * w;
 }
 
-bool Collision::CheckSphere2Triangle(const Sphere& sphere, const Triangle&
-	triangle, DirectX::XMVECTOR* inter)
-{
-	XMVECTOR p;
-
-	ClosestPtPoint2Triangle(sphere.center, triangle, &p);
-
-	XMVECTOR v = p - sphere.center;
-
-	v = XMVector3Dot(v, v);
-
-	if (v.m128_f32[0] > sphere.radius * sphere.radius) return false;
-
-	if (inter) {
-		*inter = p;
-	}
-	return true;
-}
 
 bool Collision::CheakRay2Plane(const Ray& ray, const Plane& plane,
 	float* distance , DirectX::XMVECTOR* inter)
@@ -134,5 +116,66 @@ bool Collision::CheakRay2Plane(const Ray& ray, const Plane& plane,
 	if (inter) { *inter = ray.start + t * ray.dir; }
 	return true;
 
+}
+
+bool Collision::CheckSphere2Triangle(const Sphere& sphere, const Triangle&
+	triangle, DirectX::XMVECTOR* inter)
+{
+	XMVECTOR p;
+
+	ClosestPtPoint2Triangle(sphere.center, triangle, &p);
+
+	XMVECTOR v = p - sphere.center;
+
+	v = XMVector3Dot(v, v);
+
+	if (v.m128_f32[0] > sphere.radius * sphere.radius) return false;
+
+	if (inter) {
+		*inter = p;
+	}
+	return true;
+}
+
+
+bool Collision::CheackRay2Triangle(const Ray& ray, const Triangle& triangle,
+	float* distance, DirectX::XMVECTOR* inter) 
+{
+	Plane plane;
+	XMVECTOR interPlane;
+	plane.normal = triangle.normal;
+	plane.distance = XMVector3Dot(triangle.normal, triangle.p0).m128_f32[0];
+
+	if (!CheakRay2Plane(ray, plane, distance, &interPlane)) { return false; }
+
+	const float epsilon = 1.0e-5f;
+	XMVECTOR m;
+
+	//•Óp0_p1‚É‚Â‚¢‚Ä
+	XMVECTOR pt_p0 = triangle.p0 - interPlane;
+	XMVECTOR p0_p1 = triangle.p1 - triangle.p0;
+	m = XMVector3Cross(pt_p0, p0_p1);
+
+	if (XMVector3Dot(m, triangle.normal).m128_f32[0] < -epsilon) { return false; }
+
+	//•Óp1_p2‚É‚Â‚¢‚Ä
+	XMVECTOR pt_p1 = triangle.p1 - interPlane;
+	XMVECTOR p1_p2 = triangle.p2 - triangle.p1;
+	m = XMVector3Cross(pt_p1, p1_p2);
+
+	if (XMVector3Dot(m, triangle.normal).m128_f32[1] < -epsilon) { return false; }
+
+	//•Óp2_p0‚É‚Â‚¢‚Ä
+	XMVECTOR pt_p2 = triangle.p2 - interPlane;
+	XMVECTOR p2_p0 = triangle.p0 - triangle.p2;
+	m = XMVector3Cross(pt_p2, p2_p0);
+
+	if (XMVector3Dot(m, triangle.normal).m128_f32[2] < -epsilon) { return false; }
+
+	if (inter) {
+		*inter = interPlane;
+	}
+
+	return true;
 }
 

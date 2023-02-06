@@ -136,19 +136,27 @@ void GameScene::Update()
 
 	XMVECTOR inter;
 	float distance;
-	bool hit = Collision::CheakRay2Plane(ray, plane, &distance, &inter);
+	bool hit = Collision::CheackRay2Triangle(ray, triangle, &distance, &inter);
 	if (hit) {
-		debugText.Print("HIT", 50, 260, 1.0f);
+		debugText.Print("HIT", 50, 220, 1.0f);
 		raystr.str("""");
 		raystr.clear();
-		raystr << "("
+		raystr << "inter.("
 			<< std::fixed << std::setprecision(2)
 			<< inter.m128_f32[0] << ","
 			<< inter.m128_f32[1] << ","
-			<< inter.m128_f32[2] << ")",
+			<< inter.m128_f32[2] << ")";
 
-			debugText.Print(raystr.str(), 50, 280, 1.0f);
+			debugText.Print(raystr.str(), 50, 240, 1.0f);
+
+			raystr.str("""");
+			raystr.clear();
+			raystr << "distance:(" << std::fixed << std::setprecision(2) << distance << ")";
+
+			debugText.Print(raystr.str(), 50, 260, 1.0f);
 	}
+
+
 
 	objSkydome->Update();
 	objGround->Update();

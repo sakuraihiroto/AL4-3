@@ -35,5 +35,7 @@ public:
 
 	DirectX::XMVECTOR normal;
 
+	void ComputeNormal();
+
 };
 
