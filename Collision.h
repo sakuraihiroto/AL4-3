@@ -20,5 +20,8 @@ public:
 	static bool CheackRay2Triangle(const Ray& ray, const Triangle& triangle,
 		float* distance = nullptr, DirectX::XMVECTOR* inter = nullptr);
 
+	static bool CheckRay2Sphere(const Ray& ray, const Sphere& sphere,
+		float* distance = nullptr, DirectX::XMVECTOR* inter = nullptr);
+
 };
 

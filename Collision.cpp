@@ -179,3 +179,25 @@ bool Collision::CheackRay2Triangle(const Ray& ray, const Triangle& triangle,
 	return true;
 }
 
+bool Collision::CheckRay2Sphere(const Ray& ray, const Sphere& sphere,
+	float* distance, DirectX::XMVECTOR* inter)
+{
+	XMVECTOR m = ray.start - sphere.center;
+	float b = XMVector3Dot(m, ray.dir).m128_f32[0];
+	float c = XMVector3Dot(m, m).m128_f32[0] - sphere.radius * sphere.radius;
+
+	if (c > 0.0f && b > 0.0f) { return false; }
+
+	float discr = b * b - c;
+
+	if (discr < 0.0f) { return false; }
+
+	float t = -b - sqrtf(discr);
+
+	if (t < 0)t = 0.0f;
+	if (distance) { *distance = t; }
+
+	if (inter) { *inter = ray.dir; }
+	return true;
+}
+
