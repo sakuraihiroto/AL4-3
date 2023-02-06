@@ -77,6 +77,7 @@ private: // メンバ変数
 	Sphere sphere;
 	Plane plane;
 	Triangle triangle;
+	Ray ray;
 
 };
 

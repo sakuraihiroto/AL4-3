@@ -19,6 +19,14 @@ struct Plane
 	float distance = 0.0f;
 };
 
+struct Ray
+{
+	//n“_À•W
+	DirectX::XMVECTOR start = { 0,0,0,1 };
+	//•ûŒü
+	DirectX::XMVECTOR dir = { 1,0,0,0 };
+};
+
 class Triangle {
 public:
 	DirectX::XMVECTOR p0;

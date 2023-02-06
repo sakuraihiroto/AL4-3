@@ -9,6 +9,7 @@ using namespace DirectX;
 
 GameScene::GameScene()
 {
+
 }
 
 GameScene::~GameScene()
@@ -69,6 +70,9 @@ void GameScene::Initialize(DirectXCommon* dxCommon, Input* input, Audio * audio)
 	triangle.p2 = XMVectorSet(+1.0f, 0, -1.0f, 1);
 	triangle.normal = XMVectorSet(0.0f, 1.0f, 0.0f, 0);
 
+	ray.start = XMVectorSet(0, 1, 0, 1);
+	ray.dir = XMVectorSet(0, -1, 0, 0);
+
 }
 
 void GameScene::Update()
@@ -90,39 +94,60 @@ void GameScene::Update()
 		else if (input->PushKey(DIK_DOWN)) { Object3d::CameraMoveVector({ 0.0f,0.0f,-0.06f }); }
 	}
 
-	//球移動
+	////球移動
+	//{
+	//	XMVECTOR moveY = XMVectorSet(0, 0.01f, 0, 0);
+	//	if (input->PushKey(DIK_Q)) { sphere.center += moveY; }
+	//	else if (input->PushKey(DIK_E)) { sphere.center -= moveY; }
+
+	//	XMVECTOR moveX = XMVectorSet(0.01f, 0, 0, 0);
+	//	if (input->PushKey(DIK_Z)) { sphere.center += moveX; }
+	//	else if (input->PushKey(DIK_C)) { sphere.center -= moveX; }
+	//}
+
+	//レイ操作
 	{
-		XMVECTOR moveY = XMVectorSet(0, 0.01f, 0, 0);
-		if (input->PushKey(DIK_Q)) { sphere.center += moveY; }
-		else if (input->PushKey(DIK_E)) { sphere.center -= moveY; }
+		XMVECTOR moveZ = XMVectorSet(0, 0, 0.01f, 0);
+		if (input->PushKey(DIK_8)) { ray.start += moveZ; }
+		else if(input->PushKey(DIK_2)) { ray.start -= moveZ; }
 
 		XMVECTOR moveX = XMVectorSet(0.01f, 0, 0, 0);
-		if (input->PushKey(DIK_Z)) { sphere.center += moveX; }
-		else if (input->PushKey(DIK_C)) { sphere.center -= moveX; }
+		if (input->PushKey(DIK_6)) { ray.start += moveX; }
+		else if (input->PushKey(DIK_4)) { ray.start -= moveX; }
 	}
 
-	std::ostringstream spherestr;
+	/*std::ostringstream spherestr;
 	spherestr << "Sphere:("
 		<< std::fixed << std::setprecision(2)
 		<< sphere.center.m128_f32[0] << ","
 		<< sphere.center.m128_f32[1] << ","
 		<< sphere.center.m128_f32[2] << ")";
 
-	debugText.Print(spherestr.str(), 50, 180, 1.0f);
+	debugText.Print(spherestr.str(), 50, 180, 1.0f);*/
+
+	std::ostringstream raystr;
+	raystr << "lay.start("
+		<< std::fixed << std::setprecision(2)
+		<< sphere.center.m128_f32[0] << ","
+		<< sphere.center.m128_f32[1] << ","
+		<< sphere.center.m128_f32[2] << ")";
+
+	debugText.Print(raystr.str(), 50, 180, 1.0f);
 
 	XMVECTOR inter;
-	bool hit = Collision::CheckSphere2Triangle(sphere, triangle, &inter);
+	float distance;
+	bool hit = Collision::CheakRay2Plane(ray, plane, &distance, &inter);
 	if (hit) {
-		debugText.Print("HIT", 50, 200, 1.0f);
-		spherestr.str("""");
-		spherestr.clear();
-		spherestr << "("
+		debugText.Print("HIT", 50, 260, 1.0f);
+		raystr.str("""");
+		raystr.clear();
+		raystr << "("
 			<< std::fixed << std::setprecision(2)
 			<< inter.m128_f32[0] << ","
 			<< inter.m128_f32[1] << ","
 			<< inter.m128_f32[2] << ")",
 
-			debugText.Print(spherestr.str(), 50, 220, 1.0f);
+			debugText.Print(raystr.str(), 50, 280, 1.0f);
 	}
 
 	objSkydome->Update();
